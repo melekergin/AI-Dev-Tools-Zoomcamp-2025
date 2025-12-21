@@ -1,0 +1,55 @@
+.snake-wrapper {
+  text-align: center;
+  font-family: Arial, sans-serif;
+  margin-top: 20px;
+  color: #fff;
+}
+
+.board {
+  display: grid;
+  margin: 20px auto;
+  background: #000;
+  border: 3px solid #888;
+}
+
+.cell {
+  width: 20px;
+  height: 20px;
+}
+
+.cell-snake {
+  background: #38bdf8;
+}
+
+.cell-head {
+  background: #0284c7;
+}
+
+.cell-food {
+  background: #f87171;
+}
+
+.restart-btn {
+  margin-top: 10px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  background: #4ade80;
+  color: #000;
+  font-weight: bold;
+}
+
+.restart-btn:hover {
+  background: #22c55e;
+}
+
+.game-over {
+  color: #f87171;
+  font-weight: bold;
+}
+
+.hint {
+  margin-top: 10px;
+  color: #bbb;
+}
