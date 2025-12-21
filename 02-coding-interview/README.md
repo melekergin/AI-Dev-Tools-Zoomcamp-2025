@@ -70,3 +70,20 @@ docker build -t code-collab-hub .
 # Run client + Supabase in one container
 docker run --rm -it -p 8080:8080 -p 54321:54321 -p 54322:54322 -p 54323:54323 -p 54324:54324 code-collab-hub
 ```
+
+## Deploy (Render)
+
+Recommended: deploy the frontend as a Render Static Site and use a hosted Supabase project.
+
+1) Build settings (Render):
+- Build Command: `npm install && npm run build`
+- Publish Directory: `dist`
+
+2) Environment variables (Render):
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
+- Optional: `VITE_PYODIDE_URL`
+
+3) Notes:
+- The Dockerfile runs a local Supabase stack for development, but Render only exposes one HTTP port for web services.
+- For a simple deployment, keep Supabase hosted separately and deploy only the frontend.
