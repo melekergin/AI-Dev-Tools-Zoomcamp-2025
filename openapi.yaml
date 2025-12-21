@@ -1,0 +1,318 @@
+openapi: 3.0.3
+info:
+  title: Snake Arena API
+  version: 0.1.0
+servers:
+  - url: /api
+paths:
+  /auth/login:
+    post:
+      summary: Log in a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /auth/signup:
+    post:
+      summary: Create a new user account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupRequest'
+      responses:
+        '200':
+          description: Signup result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+  /auth/logout:
+    post:
+      summary: Log out the current user
+      responses:
+        '200':
+          description: Logout result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseNull'
+  /auth/me:
+    get:
+      summary: Get current user (or null)
+      responses:
+        '200':
+          description: Current user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseUser'
+  /leaderboard:
+    get:
+      summary: Get leaderboard entries
+      parameters:
+        - in: query
+          name: mode
+          required: false
+          schema:
+            $ref: '#/components/schemas/GameMode'
+      responses:
+        '200':
+          description: Leaderboard list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLeaderboardList'
+  /scores:
+    post:
+      summary: Submit a score (requires auth)
+      security:
+        - sessionAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubmitScoreRequest'
+      responses:
+        '200':
+          description: Score submission result
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLeaderboardEntry'
+        '401':
+          description: Not authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseError'
+  /live-players:
+    get:
+      summary: List live players
+      responses:
+        '200':
+          description: Live player list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLivePlayerList'
+  /live-players/{playerId}:
+    get:
+      summary: Get a single live player
+      parameters:
+        - in: path
+          name: playerId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Live player data (or undefined)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponseLivePlayer'
+components:
+  securitySchemes:
+    sessionAuth:
+      type: apiKey
+      in: cookie
+      name: session
+  schemas:
+    Direction:
+      type: string
+      enum: [UP, DOWN, LEFT, RIGHT]
+    GameMode:
+      type: string
+      enum: [walls, pass-through]
+    Position:
+      type: object
+      required: [x, y]
+      properties:
+        x:
+          type: integer
+          format: int32
+        y:
+          type: integer
+          format: int32
+    User:
+      type: object
+      required: [id, username, email, highScore, createdAt]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        highScore:
+          type: integer
+          format: int32
+        createdAt:
+          type: string
+          format: date-time
+    LeaderboardEntry:
+      type: object
+      required: [id, username, score, mode, playedAt]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        score:
+          type: integer
+          format: int32
+        mode:
+          $ref: '#/components/schemas/GameMode'
+        playedAt:
+          type: string
+          format: date-time
+    LivePlayer:
+      type: object
+      required: [id, username, score, mode, snake, food, direction, isPlaying]
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        score:
+          type: integer
+          format: int32
+        mode:
+          $ref: '#/components/schemas/GameMode'
+        snake:
+          type: array
+          items:
+            $ref: '#/components/schemas/Position'
+        food:
+          $ref: '#/components/schemas/Position'
+        direction:
+          $ref: '#/components/schemas/Direction'
+        isPlaying:
+          type: boolean
+    AuthResponse:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        user:
+          $ref: '#/components/schemas/User'
+        error:
+          type: string
+    ApiResponseUser:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/User'
+          nullable: true
+        error:
+          type: string
+    ApiResponseLeaderboardList:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaderboardEntry'
+        error:
+          type: string
+    ApiResponseLeaderboardEntry:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          $ref: '#/components/schemas/LeaderboardEntry'
+        error:
+          type: string
+    ApiResponseLivePlayerList:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/LivePlayer'
+        error:
+          type: string
+    ApiResponseLivePlayer:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          allOf:
+            - $ref: '#/components/schemas/LivePlayer'
+          nullable: true
+        error:
+          type: string
+    ApiResponseNull:
+      type: object
+      required: [success]
+      properties:
+        success:
+          type: boolean
+        data:
+          nullable: true
+        error:
+          type: string
+    ApiResponseError:
+      type: object
+      required: [success, error]
+      properties:
+        success:
+          type: boolean
+        error:
+          type: string
+    LoginRequest:
+      type: object
+      required: [email, password]
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+    SignupRequest:
+      type: object
+      required: [email, username, password]
+      properties:
+        email:
+          type: string
+          format: email
+        username:
+          type: string
+        password:
+          type: string
+    SubmitScoreRequest:
+      type: object
+      required: [score, mode]
+      properties:
+        score:
+          type: integer
+          format: int32
+        mode:
+          $ref: '#/components/schemas/GameMode'
