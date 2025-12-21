@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: snake
+      POSTGRES_PASSWORD: snake
+      POSTGRES_DB: snake_arena
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+    environment:
+      DATABASE_URL: postgresql+psycopg://snake:snake@db:5432/snake_arena
+    ports:
+      - "8080:8000"
+    depends_on:
+      - db
+
+volumes:
+  db_data:

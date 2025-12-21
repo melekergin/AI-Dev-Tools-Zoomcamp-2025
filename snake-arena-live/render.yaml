@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: snake-arena
+    env: docker
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    plan: free
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: snake-arena-db
+          property: connectionString
+      - key: FRONTEND_DIST
+        value: /app/frontend_dist
+
+databases:
+  - name: snake-arena-db
+    plan: free
