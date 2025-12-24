@@ -20,6 +20,10 @@ This file explains what we built in this folder and how to use it.
 
 3) A simple test (`test.py`) that calls the Jina Reader fetch function.
 
+## Diagram
+
+![System diagram](diagram.png)
+
 ## Jina Reader tool (fetch_markdown)
 
 Jina Reader turns a web page into markdown if you put `https://r.jina.ai/`
