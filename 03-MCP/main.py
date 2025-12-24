@@ -1,5 +1,9 @@
+from pathlib import Path
+
 import requests
 from fastmcp import FastMCP
+
+from search import build_index, download_fastmcp_zip, load_documents, search as search_index
 
 mcp = FastMCP("Demo 🚀")
 
@@ -21,6 +25,15 @@ def _fetch_markdown_impl(url: str, timeout_s: int = 10) -> str:
     response = requests.get(f"https://r.jina.ai/{url}", timeout=timeout_s)
     response.raise_for_status()
     return response.text
+
+
+@mcp.tool
+def search_docs(query: str, limit: int = 5) -> list[dict[str, str]]:
+    """Search markdown/mdx docs from local zip archives using minsearch."""
+    download_fastmcp_zip(Path.cwd() / "fastmcp-main.zip")
+    docs = load_documents(Path.cwd())
+    index = build_index(docs)
+    return search_index(index, query, limit=limit)
 
 if __name__ == "__main__":
     mcp.run()
