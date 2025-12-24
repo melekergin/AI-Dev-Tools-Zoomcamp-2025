@@ -38,6 +38,12 @@ Verify it:
 codex mcp list
 ```
 
+If you run the command from outside the repo, use a placeholder path:
+
+```powershell
+codex mcp add jina-reader -- uv run python PATH\TO\03-MCP\main.py
+```
+
 ## Search demo
 
 `search.py` downloads the FastMCP repo zip (if missing), reads all local `*.zip` files,
